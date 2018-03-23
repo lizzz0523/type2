@@ -46,7 +46,7 @@ const data = {
 console.log(type.check(data, rule))
 ```
 
-### Plugin
+## Plugin
 
 you can also get the power of [validator](https://www.npmjs.com/package/validator) by using the validator plugin:
 
