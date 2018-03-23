@@ -71,6 +71,10 @@ function isPlainObject(value: any) {
     return Object.getPrototypeOf(value) === proto
 }
 
+function isFunction(value: any) {
+    return typeof value === 'function'
+}
+
 class Stack<T> {
     private list_: T[] = []
 
@@ -329,10 +333,20 @@ class TNumber extends Checkable {
 }
 
 class TBoolean extends Checkable {
-    __checkable__: string = 'boolean'
+    __checkable__: string = 'bool'
 
     check(value: any): IError | void {
         if (!isBoolean(value)) {
+            return ErrorType.TYPE_MISMATCH
+        }
+    }
+}
+
+class TFunction extends Checkable {
+    __checkable__: string = 'func'
+
+    check(value: any): IError | void {
+        if (!isFunction(value)) {
             return ErrorType.TYPE_MISMATCH
         }
     }
@@ -344,7 +358,7 @@ function instance(Checkable: ICheckableContructor) {
     }
 }
 
-exports.type = {
+const type = {
     check: (value: any, rule: ICheckable | ICheckable[] | ICheckableMap) => {
         const checker = new TypeChecker()
 
@@ -356,7 +370,14 @@ exports.type = {
 
         return checker.errors()
     },
+    apply: (plugin: any) => {
+        assert(isFunction(plugin), 'plugin must be a function')
+        return plugin(type)
+    },
     string: instance(TString),
     number: instance(TNumber),
-    boolean: instance(TBoolean),
+    bool: instance(TBoolean),
+    func: instance(TFunction)
 }
+
+exports.type = type

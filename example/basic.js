@@ -9,7 +9,7 @@ const rule = {
     projects: [{
         url:        type.string().match(/^https?:\/\//),
         start_time: type.number().min(+new Date(2018, 3, 1)),
-        is_finish:  type.boolean()
+        is_finish:  type.bool()
     }]
 }
 
