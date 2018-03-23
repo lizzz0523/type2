@@ -1,4 +1,4 @@
-# type2 - a simple data validate
+# type2 - a simple data validator
 
 ## Installation
 ```
@@ -14,7 +14,7 @@ const rule = {
     name:   type.string().length(20),
     age:    type.number().range(18, 30),
     gender: type.number().optional(),
-    compay: type.string().when(data => data.name == 'foo'),
+    company: type.string().when(data => data.name == 'foo'),
     projects: [{
         url:        type.string().match(/^https?:\/\//),
         start_time: type.number().min(+new Date(2018, 3, 1)),
@@ -27,7 +27,7 @@ const data = {
     name: 'bar',
     age: 18,
     gender: null,
-    compay: null,
+    company: null,
     projects: [
         {
             url: 'https://project.example.com/1',
