@@ -1,0 +1,15 @@
+{
+  "name": "type2",
+  "version": "0.1.0",
+  "description": "simple data validator",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:dev": "tsc --watch"
+  },
+  "author": "lizmlzhou",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^9.4.7"
+  }
+}
