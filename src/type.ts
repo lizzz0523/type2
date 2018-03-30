@@ -1,5 +1,9 @@
 const assert = require('assert')
 
+interface IHashMap {
+    [key: string]: any
+}
+
 interface IError {
     errno: number
     errmsg: string
@@ -25,7 +29,7 @@ interface ICheckable {
 }
 
 interface ICheckableContructor {
-    new (): ICheckable
+    new (...args: any[]): ICheckable
 }
 
 interface ICheckableMap {
@@ -52,23 +56,10 @@ const isArray = isType<any[]>('Array')
 const isString = isType<string>('String')
 const isNumber = isType<number>('Number')
 const isBoolean = isType<boolean>('Boolean')
+const isPlainObject = isType<IHashMap>('Object')
 
 function isCheckable(value: any): value is ICheckable {
     return value && value.__checkable__
-}
-
-// 来自redux中的简单对象检测
-// ref: https://github.com/reactjs/redux/blob/master/src/utils/isPlainObject.js
-function isPlainObject(value: any) {
-    if (typeof value !== 'object' || value === null) return false
-
-    var proto = value
-
-    while (Object.getPrototypeOf(proto) !== null) {
-        proto = Object.getPrototypeOf(proto)
-    }
-
-    return Object.getPrototypeOf(value) === proto
 }
 
 function isFunction(value: any) {
@@ -352,9 +343,35 @@ class TFunction extends Checkable {
     }
 }
 
+class TOneOf extends Checkable {
+    __checkable__: string = 'oneOf'
+
+    private options_: any[] = []
+
+    constructor(options: any[]) {
+        super()
+        // 这里的options实际上可以包含ICheckable
+        this.options_ = options
+    }
+
+    check(value: any): IError | void {
+        const error = this.options_.every(option => {
+            if (isCheckable(option)) {
+                return option.check(value) !== void 0
+            } else {
+                return option !== value
+            }
+        })
+
+        if (error) {
+            return ErrorType.TYPE_MISMATCH
+        }
+    }
+}
+
 function instance(Checkable: ICheckableContructor) {
-    return function() {
-        return new Checkable()
+    return function(...args: any[]) {
+        return new Checkable(...args)
     }
 }
 
@@ -377,7 +394,8 @@ const type = {
     string: instance(TString),
     number: instance(TNumber),
     bool: instance(TBoolean),
-    func: instance(TFunction)
+    func: instance(TFunction),
+    oneOf: instance(TOneOf)
 }
 
 exports.type = type

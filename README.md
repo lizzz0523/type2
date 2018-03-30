@@ -11,19 +11,21 @@ const type = require('type2')
 
 // create a validation rule
 const rule = {
-    name:   type.string().length(20),
-    age:    type.number().range(18, 30),
+    type: type.oneOf(['admin', 'user']),
+    name: type.string().length(20),
+    age: type.number().range(18, 30),
     gender: type.number().optional(),
     company: type.string().when(data => data.name == 'foo'),
     projects: [{
-        url:        type.string().match(/^https?:\/\//),
+        url: type.string().match(/^https?:\/\//),
         start_time: type.number().min(+new Date(2018, 3, 1)),
-        is_finish:  type.bool()
+        is_finish: type.bool()
     }]
 }
 
 // some data need to validate
 const data = {
+    type: 'admin',
     name: 'bar',
     age: 18,
     gender: null,

@@ -10,7 +10,8 @@ const rule = {
         url:        type.string().match(/^https?:\/\//),
         start_time: type.number().min(+new Date(2018, 3, 1)),
         is_finish:  type.bool()
-    }]
+    }],
+    type: type.oneOf(['user', 'admin'])
 }
 
 // some data need to validate
@@ -30,7 +31,8 @@ const data = {
             start_time: Date.now(),
             is_finish: true
         }
-    ]
+    ],
+    type: 'user'
 }
 
 // done
