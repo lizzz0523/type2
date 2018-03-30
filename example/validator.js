@@ -8,8 +8,8 @@ type.apply(validator)
 const rule = {
     websites: [{
         url: type.url(),
-        bgcolor: type.hexcolor(),
-        fgcolor: type.hexcolor(),
+        bgcolor: type.hexColor(),
+        fgcolor: type.hexColor(),
         email: type.email()
     }]
 }
