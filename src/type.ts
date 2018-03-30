@@ -66,6 +66,10 @@ function isFunction(value: any) {
     return typeof value === 'function'
 }
 
+function hasOwnProperty(value: any, key: string) {
+    return Object.prototype.hasOwnProperty.call(value, key)
+}
+
 class Stack<T> {
     private list_: T[] = []
 
@@ -176,7 +180,7 @@ class TypeChecker {
             this.markError_(key, ErrorType.TYPE_MISMATCH)
         } else {
             Object.keys(rule).forEach(subKey => {
-                if (!value.hasOwnProperty(subKey)) {
+                if (!hasOwnProperty(value, subKey)) {
                     // 捕获所有KEY_UNDEFINED错误
                     this.markError_(subKey, ErrorType.KEY_UNDEFINED)
                 } else {
