@@ -418,6 +418,24 @@ class TInstanceOf extends Checkable {
     }
 }
 
+class TEqual extends Checkable {
+    __checkable__: string = 'equal'
+
+    private value_: any
+
+    constructor(value: any) {
+        super()
+
+        this.value_ = value
+    }
+
+    check(value: any): IError | void {
+        if (value !== this.value_) {
+            return ErrorType.TYPE_MISMATCH
+        }
+    }
+}
+
 function instance(Checkable: ICheckableContructor) {
     return function(...args: any[]) {
         return new Checkable(...args)
@@ -447,7 +465,8 @@ const type = {
     bool: instance(TBoolean),
     func: instance(TFunction),
     oneOf: instance(TOneOf),
-    instanceOf: instance(TInstanceOf)
+    instanceOf: instance(TInstanceOf),
+    equal: instance(TEqual)
 }
 
 exports.type = type
