@@ -1,9 +1,5 @@
 const assert = require('assert')
 
-interface IHashMap {
-    [key: string]: any
-}
-
 interface IContructor {
     new(...args: any[]): any
 }
@@ -60,7 +56,7 @@ const isArray = isType<any[]>('Array')
 const isString = isType<string>('String')
 const isNumber = isType<number>('Number')
 const isBoolean = isType<boolean>('Boolean')
-const isPlainObject = isType<IHashMap>('Object')
+const isObject = isType<Object>('Object')
 
 function isCheckable(value: any): value is ICheckable {
     return value && value.__checkable__
@@ -68,6 +64,10 @@ function isCheckable(value: any): value is ICheckable {
 
 function isFunction(value: any) {
     return typeof value === 'function'
+}
+
+function isPlainObject(value: any) {
+    return value !== null && isObject(value)
 }
 
 function hasOwnProperty(value: any, key: string) {
