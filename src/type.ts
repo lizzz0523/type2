@@ -4,6 +4,10 @@ interface IHashMap {
     [key: string]: any
 }
 
+interface IContructor {
+    new(...args: any[]): any
+}
+
 interface IError {
     errno: number
     errmsg: string
@@ -248,6 +252,26 @@ abstract class Checkable implements ICheckable {
     }
 }
 
+class TObject extends Checkable {
+    __checkable__: string = 'object'
+
+    check(value: any): IError | void {
+        if (!isPlainObject(value)) {
+            return ErrorType.TYPE_MISMATCH
+        }
+    }
+}
+
+class TArray extends Checkable {
+    __checkable__: string = 'array'
+
+    check(value: any): IError | void {
+        if (!isArray(value)) {
+            return ErrorType.TYPE_MISMATCH
+        }
+    }
+}
+
 class TString extends Checkable {
     __checkable__: string = 'string'
 
@@ -324,6 +348,8 @@ class TNumber extends Checkable {
 
         this.min(minValue)
         this.max(maxValue)
+
+        return this
     }
 }
 
@@ -350,15 +376,16 @@ class TFunction extends Checkable {
 class TOneOf extends Checkable {
     __checkable__: string = 'oneOf'
 
-    private options_: any[] = []
+    private options_: any[]
 
     constructor(options: any[]) {
         super()
-        // 这里的options实际上可以包含ICheckable
+
         this.options_ = options
     }
-
+    
     check(value: any): IError | void {
+        // 这里的options实际上可以包含ICheckable
         const error = this.options_.every(option => {
             if (isCheckable(option)) {
                 return option.check(value) !== void 0
@@ -368,6 +395,24 @@ class TOneOf extends Checkable {
         })
 
         if (error) {
+            return ErrorType.TYPE_MISMATCH
+        }
+    }
+}
+
+class TInstanceOf extends Checkable {
+    __checkable__: string = 'instanceOf'
+
+    private klass_: IContructor
+
+    constructor(klass: IContructor) {
+        super()
+
+        this.klass_ = klass
+    }
+
+    check(value: any): IError | void {
+        if (!(value instanceof this.klass_)) {
             return ErrorType.TYPE_MISMATCH
         }
     }
@@ -395,11 +440,14 @@ const type = {
         assert(isFunction(plugin), 'plugin must be a function')
         return plugin(type)
     },
+    object: instance(TObject),
+    array: instance(TArray),
     string: instance(TString),
     number: instance(TNumber),
     bool: instance(TBoolean),
     func: instance(TFunction),
-    oneOf: instance(TOneOf)
+    oneOf: instance(TOneOf),
+    instanceOf: instance(TInstanceOf)
 }
 
 exports.type = type
