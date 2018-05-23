@@ -15,6 +15,7 @@ interface IErrorMap {
 
 interface ITypeError extends IError {
     key: string
+    value: any
 }
 
 interface ICondition {
@@ -158,12 +159,12 @@ class TypeChecker {
             return
         }
 
-        this.markError_(key, rule.check(value))
+        this.markError_(key, value, rule.check(value))
     }
 
     private checkArray_(key: string, value: any, rules: ICheckable[]): void {
         if (!isArray(value)) {
-            this.markError_(key, ErrorType.TYPE_MISMATCH)
+            this.markError_(key, value, ErrorType.TYPE_MISMATCH)
         } else {
             if (rules.length === 1) {
                 const rule = rules[0]
@@ -181,12 +182,12 @@ class TypeChecker {
 
     private checkObject_(key: string, value: any, rule: ICheckableMap): void {
         if (!isPlainObject(value)) {
-            this.markError_(key, ErrorType.TYPE_MISMATCH)
+            this.markError_(key, value, ErrorType.TYPE_MISMATCH)
         } else {
             Object.keys(rule).forEach(subKey => {
                 if (!hasOwnProperty(value, subKey)) {
                     // 捕获所有KEY_UNDEFINED错误
-                    this.markError_(subKey, ErrorType.KEY_UNDEFINED)
+                    this.markError_(subKey, void 0, ErrorType.KEY_UNDEFINED)
                 } else {
                     this.check(key + '.' + subKey, value[subKey], rule[subKey])
                 }
@@ -194,9 +195,9 @@ class TypeChecker {
         }
     }
 
-    private markError_(key: string, error: IError | void) {
+    private markError_(key: string, value: any, error: IError | void) {
         if (error) {
-            this.globalError_.push({ key, ...error })
+            this.globalError_.push({ key, value, ...error })
         }
     }
 }
