@@ -1,4 +1,4 @@
-const assert = require('assert')
+const assert = require('./assert')
 
 interface IContructor {
     new(...args: any[]): any
