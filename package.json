@@ -1,6 +1,6 @@
 {
   "name": "type2",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "simple data validator",
   "main": "index.js",
   "repository": {
